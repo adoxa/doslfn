@@ -7,9 +7,9 @@
  dz    "devre dçüç."						;5
  dz 10,"(Baüka bir TSR Int21 ve/veya Int2F kesmesini aldç)"	;6
  dz    "HenÅz kurulmadç!"					;7
- dz    "Asgari 386 iülemcisine ihtiyaá duyar!"			;8
+ dz    "DOS'çn asgari 4. sÅrÅmÅne ihtiyaá duyar!"		;8
  dz    "seáenekler alçndç"					;9
- db    "	(386+)	++ FREEWARE ++",10			;10
+ db    "++ FREEWARE ++",10					;10
   db   "DOS iáin uzun dosya isimlerini destekleyen program.",10
   db   "BU PROGRAMI RòSKò SòZ öSTLENEREK KULLANIN, VERò KAYBI OLABòLòR",10
   db   "Faaliyetler:	- (boü)		TSR'i yÅkle ve/veya etkinleütir",10
@@ -65,18 +65,17 @@ endif
  dz    "yçßçn yeniden boyutlandçrçlamaz"			;29
  dz    "seáenek reddedildi"					;30
  dz			 " - ônce TSR'i bellekten kaldçrçn"	;31
- dz    "DOS'çn asgari 4. sÅrÅmÅne ihtiyaá duyar!"		;32
- dz 10,"Bu program bu Windows sÅrÅmÅnÅn DOS penceresinde iüe yaramaz!";33
- dz    "Yçßçn: boyut=%u, kullançlan=%u, boü=%u, azami-mevcut=%u Bayt",10 ;34
+ dz 10,"Bu program bu Windows sÅrÅmÅnÅn DOS penceresinde iüe yaramaz!";32
+ dz    "Yçßçn: boyut=%u, kullançlan=%u, boü=%u, azami-mevcut=%u Bayt",10 ;33
+ dz    "InDOS bayraßç ve sÅrÅcÅ kullançmçnç SIFIRLA"		;34
  dz    "Son hata: %u - "					;35  =   0
  dz			"kullançcç yazma eriüimini reddetti"		;1
  dz			"FAT dizini geniületilemedi"			;2
  dz			"bellek yetersiz - yçßçnç arttçrçn"		;3
  dz			"Unikod tablosu otomatik olarak yÅklenemedi" 	;4
- dz    "InDOS bayraßç ve sÅrÅcÅ kullançmçnç SIFIRLA"		;40
 if USEWINTIME
- dz    "Saat dilimi üudur:"					;41
- dz    "%35s UTC%+d",10						;42
+ dz    "Saat dilimi üudur:"					;40
+ dz    "%35s UTC%+d",10						;41
 endif
 ifdef PROFILE
  dz    "Profil.",10						;ProfileNr

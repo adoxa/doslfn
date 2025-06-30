@@ -7,9 +7,9 @@
  dz    "dÇsactivÇ."						;5
  dz 10,"(Un autre rÇsident a pris Int21 et/ou Int2F)"		;6
  dz    "Pas encore installÇ !"					;7
- dz    "NÇcessite au moins un processeur 386 !"			;8
+ dz    "nÇcessite au moins la version 4 de DOS !"		;8
  dz    "option(s) prises"					;9
- db    "	(386+)	++ FREEWARE ++",10			;10
+ db    "++ FREEWARE ++",10					;10
   db   "Programme qui prend en charge les noms de fichiers longs sous DOS.",10
   db   "UTILISEZ CE PROGRAMME ∑ VOS RISQUES, PERTE DE DONNêES POSSIBLE",10
   db   "Actions :	- (rien)	charger et/ou activer le TSR",10
@@ -65,18 +65,17 @@ endif
  dz    "impossible de redimensionner le tas"			;29
  dz    "option rejetÇe"						;30
  dz			 " - dÇchargez d'abord le rÇsident de la mÇmoire"	;31
- dz    "nÇcessite au moins la version 4 de DOS !"		;32
- dz 10,"Ce programme est inutile dans une fenàtre DOS de cette version de Windows !";33
- dz    "Tas: taille=%u, utilisÇ=%u, libre=%u, max-dispo=%u Octets",10	;34
+ dz 10,"Ce programme est inutile dans une fenàtre DOS de cette version de Windows !";32
+ dz    "Tas: taille=%u, utilisÇ=%u, libre=%u, max-dispo=%u Octets",10	;33
+ dz    "drapeau InDOS et RêINITIALISATION de l'utilisation du lecteur"	;34
  dz    "Derniäre erreur : %u - "						;35  =   0
  dz			"l'utilisateur avait refusÇ l'accäs en Çcriture"		;1
  dz			"impossible d'Çtendre le rÇpertoire FAT"			;2
  dz			"pas assez de mÇmoire - augmentez le tas (heap)"		;3
  dz			"impossible de charger automatiquement la table Unicode"	;4
- dz    "drapeau InDOS et RêINITIALISATION de l'utilisation du lecteur"	;40
 if USEWINTIME
- dz    "Le fuseau horaire est"					;41
- dz    "%35s UTC%+d",10						;42
+ dz    "Le fuseau horaire est"					;40
+ dz    "%35s UTC%+d",10						;41
 endif
 ifdef PROFILE
  dz    "Profil.",10						;ProfileNr

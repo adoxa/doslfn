@@ -6674,7 +6674,6 @@ Activate:
 	add	ax,[LocalHeapSize]
 	add	ax,10h		;hier: inklusive MCB
 	;BL-numerierten Text ausgeben
-	P8086
 TXTOut:	push	ax
 	call	AusgabeStringNr	;Textausgabe
 	pop	ax
@@ -6683,13 +6682,11 @@ TXTOut:	push	ax
 	call	AusgabeNL
 	cmp	bh,2		;Meldung "Resident"?
 	jnz	@@exi		;nein, normales Programmende
-	P386
 	mov	dx,[LocalHeap]
 	add	dx,[LocalHeapSize]
 	shr	dx,4		;Speicherbedarf in Paragrafen umrechnen
 	DOS	3100h		;Resident beenden
 @@exi:
-	P8086
 	call	PrintLastError
 	DOS	4C00h
 endp
@@ -6735,7 +6732,6 @@ endp
 ;** printf() Marke Eigenbau **
 ;*****************************
 
-	P286
 AusgabeNL:
 	mov	bl,0
 proc AusgabeStringNr c
@@ -6783,7 +6779,6 @@ endp
 
 SwitchChars	db	'LFNhl0.-+# '
 
-	P386
 proc PreprocessHandler
 ;NUR FöR TINY-MODELL und 386
 ;verarbeitet eine Sequenz, zum Verketten gemacht!
@@ -7191,10 +7186,10 @@ proc PrintTimeZone
 	sar	cx,8
 	add	ax,cx
 	push	ax
-	mov	bl,41		;"Timezone is"
+	mov	bl,40		;"Timezone is"
 	call	LoadString
 	push	si
-	mov	bl,42
+	mov	bl,41
 	call	AusgabeStringNr
 	pop	cx cx
 	pop	cx
@@ -7663,13 +7658,10 @@ SetStringResourcePointer:
 @@de:	mov	[String_Table],dx
 	ret
 endp
-	P8086
 
 proc help	;Hilfe Option "H" oder "?", kein Return
-	mov	ax,ofs Downl$
-	push	ax		;8086!
-	mov	ax,ofs djmh$
-	push	ax		;8086!
+	push	ofs Downl$
+	push	ofs djmh$
 	mov	ax,ofs ejmh$
 	;push	ax
 	;mov	ax,ofs Email$
@@ -7735,7 +7727,6 @@ proc ShowStatus	;Status-Anzeige, kein Return
 	test	ch,bit 7
 	mov	bl,7		;"Noch nicht installiert"
 	jnz	TXTOut
-	P386
 	mov	cl,[es:ctrl0]
 	test	cl,80h
 	mov	bl,5		;"deaktiviert"
@@ -7777,7 +7768,7 @@ proc AusgabeSchalter
 	inc	bl
 	cmp	bl,23
 	jne	@@l
-	mov	bl,40
+	mov	bl,34
 	mov	cl,[by es:ResetDrv]
 	mov	ch,10h			;90h=ON, c3h=OFF
 	jmp	AusgabeSch
@@ -7876,12 +7867,11 @@ proc AusgabeHeap
 	push	cx
 	push	bx
 	push	ax
-	mov	bl,34
+	mov	bl,33
 	call	AusgabeStringNr
 	add	sp,8
 	ret
 endp
-	P8086
 
 ;********************************
 ;** Installations-Vorbereitung **
@@ -7890,7 +7880,6 @@ endp
 proc GetLocalHeapSize
 ;PA: AX=Heap-Grî·e
 	PUSHSTATE
-	P386
 	mov	ax,[LocalHeapSize]
 	or	ax,ax
 	jnz	@@e		;angegebene Grî·e (root wei·, was sie tut)
@@ -7939,7 +7928,7 @@ proc CheckWinVer
 	or	ax,ax
 	jnz	@@e
 	cmp	bh,4		;Zu hoch?
-	mov	bl,33
+	mov	bl,32
 	jc	@@e
 _out:	jmp	TXTOut
 @@e:	ret
@@ -7957,15 +7946,11 @@ proc Install	;Installation oder Aktivierung, kein Return
 	mov	bl,9		;mit,  "Schalter angenommen"
 @@setab:jmp	Activate
 @@test:				;hier: ES=DS
-;Auf Mindest-Prozessor und -Betriebssystem testen
+;Auf Mindest-Betriebssystem testen
 	mov	bp,cx		;retten
-	IS386
-	mov	bl,8		;"Test386 versagt"
-	jc	_out
-	P386
 	DOS	30h		;DOS-Versionsnummer
 	cmp	al,4		;wegen Int21/AH=6Ch
-	mov	bl,32
+	mov	bl,8
 	jc	_out
 	call	CheckWinVer
 ;Zeiger auf InDOS-Flag und GerÑtetreiber-Kette beschaffen
@@ -8043,9 +8028,9 @@ Texte_deutsch:
  dz    "deaktiviert."						;5
  dz 10,"(Andere TSR stahl Int21 und/oder Int2F)"		;6
  dz    "Noch nicht installiert!"				;7
- dz    "Benîtigt mindestens einen 386er Prozessor!"		;8
+ dz    "DOS4+ erforderlich!"					;8
  dz    "Schalter angenommen."					;9
- db    "	(386+)	++ FREEWARE ++",10			;10
+ db    "++ FREEWARE ++",10					;10
   db   "Programm fÅr lange Dateinamen unter nacktem DOS.",10
   db   "Aktionen:	- (nichts)	TSR laden oder aktivieren",10
   db   "		- h oder ?	diese Hilfe",10
@@ -8100,18 +8085,17 @@ endif
  dz    "Kann Heap-Grî·e nicht verÑndern."			;29
  dz    "Kann Schalter nicht annehmen."				;30
  dz 10,"Dazu vorher TSR entfernen."				;31
- dz    "DOS4+ erforderlich!"					;32
- dz 10,"In einem DOS-Fenster dieser Windows-Version ist DOSLFN sinnlos!";33
- dz    "Heap: gesamt=%u, used=%u, frei=%u, grî·ter Block=%u Bytes",10	;34
+ dz 10,"In einem DOS-Fenster dieser Windows-Version ist DOSLFN sinnlos!";32
+ dz    "Heap: gesamt=%u, used=%u, frei=%u, grî·ter Block=%u Bytes",10	;33
+ dz    "InDOS-Flag-Verriegelung + RESET Laufw."			;34
  dz    "Letzter Fehler: %u - "					;35  =	 0
  dz			"Verbotener Schreibzugriff"			;1
  dz			"Konnte Verzeichnis nicht expandieren"		;2
  dz			"Nicht genug Speicher - bitte vergrî·ern"	;3
  dz			"Konnte Unicode-Datei nicht laden"		;4
- dz    "InDOS-Flag-Verriegelung + RESET Laufw."			;40
 if USEWINTIME
- dz    "Zeitzone ist"						;41
- dz    "%37s UTC%+d",10						;42
+ dz    "Zeitzone ist"						;40
+ dz    "%37s UTC%+d",10						;41
 endif
 ifdef PROFILE
  dz    "Profile.",10						;ProfileNr
@@ -8120,7 +8104,7 @@ ifdef PROFILE
  dz    "Calibrating profile.",10				;+3
  dz    "Profile timing constant = %lu000",10			;+4
  dz    "Error running calibration",10				;+5
- ProfileNr = 41 + 2 * USEWINTIME
+ ProfileNr = 40 + 2 * USEWINTIME
 endif
 
 texte_englisch:
@@ -8132,9 +8116,9 @@ texte_englisch:
  dz    "disabled."						;5
  dz 10,"(Another TSR grabbed Int21 and/or Int2F)"		;6
  dz    "Not yet installed!"					;7
- dz    "Requires at least a 386 processor!"			;8
+ dz    "requires at least DOS version 4!"			;8
  dz    "switch(es) taken"					;9
- db    "	(386+)	++ FREEWARE ++",10			;10
+ db    "++ FREEWARE ++",10					;10
   db   "Program that supports long filenames in pure DOS.",10
   db   "USE THIS PROGRAM AT YOUR OWN RISK, DATA LOSS MAY BE POSSIBLE",10
   db   "Actions:	- (nothing)	load and/or enable TSR",10
@@ -8190,18 +8174,17 @@ endif
  dz    "cannot resize heap"					;29
  dz    "switch rejected"					;30
  dz			 " - unload TSR first"			;31
- dz    "requires at least DOS version 4!"			;32
- dz 10,"This program is useless in a DOS box of this Windows version!";33
- dz    "Heap: size=%u, used=%u, free=%u, max-avail=%u Bytes",10 ;34
+ dz 10,"This program is useless in a DOS box of this Windows version!";32
+ dz    "Heap: size=%u, used=%u, free=%u, max-avail=%u Bytes",10 ;33
+ dz    "InDOS flag and RESET drive usage"			;34
  dz    "Last error: %u - "					;35  =   0
  dz			"user had denied write access"			;1
  dz			"couldn't expand FAT directory"			;2
  dz			"not enough memory - increase heap"		;3
  dz			"couldn't auto-load Unicode table"		;4
- dz    "InDOS flag and RESET drive usage"			;40
 if USEWINTIME
- dz    "Timezone is"						;41
- dz    "%35s UTC%+d",10						;42
+ dz    "Timezone is"						;40
+ dz    "%35s UTC%+d",10						;41
 endif
 ifdef PROFILE
  dz    "Profile.",10						;ProfileNr
