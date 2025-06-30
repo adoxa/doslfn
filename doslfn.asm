@@ -3345,8 +3345,8 @@ proc Check_Device
 ;O: [File_Flags].NDevice=0 if device, unchanged if not
 ;   CY always clear
 ;M: CX
-	test	[File_Flags],(File_Flag_Is_LFN or File_Flag_Wildcards or File_Flag_Has_Dot)
-	jnz	@@e		;cannot be a DOS device
+	;test	[File_Flags],(File_Flag_Is_LFN or File_Flag_Wildcards or File_Flag_Has_Dot)
+	;jnz	@@e		;cannot be a DOS device (yes, it can, only the name is relevant)
 	push	es bx si di
 	 mov	bx,ofs DriverChain
 @@l:	 les	bx,[es:bx]
