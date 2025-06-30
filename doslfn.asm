@@ -2345,8 +2345,8 @@ proc GlobbingEx
 	xchg	si,di
 	call	Globbing
 	xchg	si,di
-	db	0D6h		;setalc
-	or	al,al		;Umwandlung NC->Z
+	sbb	al,al		;Umwandlung NC->Z
+	clc
 _glob_ret:
 	ret
 endp
