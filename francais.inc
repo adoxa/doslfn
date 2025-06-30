@@ -37,7 +37,7 @@ endif
   db   "		- ms[:|=]octets	dÇclarer la taille du chemin court, 16..141",10
   db   "		- ml[:|=]octets	dÇclarer la taille du chemin long, 16..1024",10
   db   "		- mn[:|=]octets	dÇclarer la taille du nom long, 13..512",10
-  db   "		- p[:|=]chemin	dÇclarer le dossier de travail pour .TBL/.JLT/.386",10
+  db   "		- p[:|=]chemin	dÇclarer le dossier de travail pour .TBL/.386",10
   db   "		- l{d|e|f|t}	dÇfinir la langue (allemand|anglais|franáais|turc)",10
   db   "Environnement : TZ=xxxNyyy	fuseau horaire N pour conversion, pas d'heure d'hiver",10
   db   "E-mail :         %s",10
@@ -71,13 +71,12 @@ endif
  dz    "Derniäre erreur : %u - "						;35  =   0
  dz			"l'utilisateur avait refusÇ l'accäs en Çcriture"		;1
  dz			"impossible d'Çtendre le rÇpertoire FAT"			;2
- dz			"impossible de trouver une table de liens Joliet"		;3
- dz			"pas assez de mÇmoire - augmentez le tas (heap)"		;4
- dz			"impossible de charger automatiquement la table Unicode"	;5
- dz    "drapeau InDOS et RêINITIALISATION de l'utilisation du lecteur"	;41
+ dz			"pas assez de mÇmoire - augmentez le tas (heap)"		;3
+ dz			"impossible de charger automatiquement la table Unicode"	;4
+ dz    "drapeau InDOS et RêINITIALISATION de l'utilisation du lecteur"	;40
 if USEWINTIME
- dz    "Le fuseau horaire est"					;42
- dz    "%35s UTC%+d",10						;43
+ dz    "Le fuseau horaire est"					;41
+ dz    "%35s UTC%+d",10						;42
 endif
 ifdef PROFILE
  dz    "Profil.",10						;ProfileNr

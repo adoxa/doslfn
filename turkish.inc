@@ -37,7 +37,7 @@ endif
   db   "		- ms[:|=]bayt	kçsa yolun boyutunu beyan et, 16..141",10
   db   "		- ml[:|=]bayt	uzun yolun boyutunu beyan et, 16..1024",10
   db   "		- mn[:|=]bayt	uzun ismin boyutunu beyan et, 13..512",10
-  db   "		- p[:|=]yol 	.TBL/.JLT/.386 iáin áalçüma dizinini beyan et",10
+  db   "		- p[:|=]yol 	.TBL/.386 iáin áalçüma dizinini beyan et",10
   db   "		- l{d|e|f|t}	dili ayarla (Almanca|òngilizce|Fransçzca|TÅrkáe)",10
   db   "Ortam: 		TZ=xxxNyyy	saat dilimi dînÅüÅmÅ iáin N saat dilimi, yaz saati yok",10
   db   "E-posta: %s",10
@@ -71,13 +71,12 @@ endif
  dz    "Son hata: %u - "					;35  =   0
  dz			"kullançcç yazma eriüimini reddetti"		;1
  dz			"FAT dizini geniületilemedi"			;2
- dz			"Joliet Baßlantç Tablosu bulunamadç"		;3
- dz			"bellek yetersiz - yçßçnç arttçrçn"		;4
- dz			"Unikod tablosu otomatik olarak yÅklenemedi" 	;5
- dz    "InDOS bayraßç ve sÅrÅcÅ kullançmçnç SIFIRLA"		;41
+ dz			"bellek yetersiz - yçßçnç arttçrçn"		;3
+ dz			"Unikod tablosu otomatik olarak yÅklenemedi" 	;4
+ dz    "InDOS bayraßç ve sÅrÅcÅ kullançmçnç SIFIRLA"		;40
 if USEWINTIME
- dz    "Saat dilimi üudur:"					;42
- dz    "%35s UTC%+d",10						;43
+ dz    "Saat dilimi üudur:"					;41
+ dz    "%35s UTC%+d",10						;42
 endif
 ifdef PROFILE
  dz    "Profil.",10						;ProfileNr

@@ -1323,7 +1323,7 @@ proc CheckLoadCP
 	 jz	@@e
 	 call	LoadCP
 	 jnc	@@e
-	 mov	[LastError],5
+	 mov	[LastError],4
 @@e:	popa
 	ret
 endp
@@ -5776,7 +5776,7 @@ uses si
 	lea	di,[si-2]
 	stosw			;Grî·e allozierter Block eintragen
 	ret
-@@nomem:mov	[LastError],4	;"not enough memory"
+@@nomem:mov	[LastError],3	;"not enough memory"
 	ret
 endp
 
@@ -6515,7 +6515,7 @@ LongSize	dw	260	;/ML - size of longbuffer
 NameSize	dw	256	;/MN - size of longname
 		dw	13
 		dw	512
-WorkDir		dd	?	;Arbeitsverzeichnis: .JLT/.TBL/.386 (/P)
+WorkDir		dd	?	;Arbeitsverzeichnis: .TBL/.386 (/P)
 
 if USEWINTIME
 Epoch		dd	0e1d58000h ;100-ns intervals from
@@ -7191,10 +7191,10 @@ proc PrintTimeZone
 	sar	cx,8
 	add	ax,cx
 	push	ax
-	mov	bl,42		;"Timezone is"
+	mov	bl,41		;"Timezone is"
 	call	LoadString
 	push	si
-	mov	bl,43
+	mov	bl,42
 	call	AusgabeStringNr
 	pop	cx cx
 	pop	cx
@@ -7777,7 +7777,7 @@ proc AusgabeSchalter
 	inc	bl
 	cmp	bl,23
 	jne	@@l
-	mov	bl,41
+	mov	bl,40
 	mov	cl,[by es:ResetDrv]
 	mov	ch,10h			;90h=ON, c3h=OFF
 	jmp	AusgabeSch
@@ -7888,8 +7888,6 @@ endp
 ;********************************
 
 proc GetLocalHeapSize
-;Berechnet erforderliche(?) Heap-Grî·e anhand der grî·ten .JLT-Datei,
-;die im Arbeitsverzeichnis von DOSLFN liegt
 ;PA: AX=Heap-Grî·e
 	PUSHSTATE
 	P386
@@ -8019,8 +8017,6 @@ proc Install	;Installation oder Aktivierung, kein Return
 @@a1:	jmp	CriticalInit
 endp
 
-jltfilter$:	dz	"*.JLT"
-
 ;***********************
 ;** String-Ressourcen **
 ;***********************
@@ -8076,7 +8072,7 @@ endif
   db   "		- ms[:|=]bytes	declare size of short path, 16..141",10
   db   "		- ml[:|=]bytes	declare size of long path, 16..1024",10
   db   "		- mn[:|=]bytes	declare size of long name, 13..512",10
-  db   "		- p[:|=]path	Arbeitsverzeichnis (.TBL/.JLT/.386) festlegen",10
+  db   "		- p[:|=]path	Arbeitsverzeichnis (.TBL/.386) festlegen",10
   db   "		- l{d|e|f|t}	Sprache setzen (deutsch|englisch|franzîsisch|tÅrkisch)",10
   db   "Umgebung: 	TZ=xxxNyyy	Zeitzone N fÅr Zeitumrechnung, ohne DST",10
   db   "Email:    %s",10
@@ -8110,13 +8106,12 @@ endif
  dz    "Letzter Fehler: %u - "					;35  =	 0
  dz			"Verbotener Schreibzugriff"			;1
  dz			"Konnte Verzeichnis nicht expandieren"		;2
- dz			"Konnte Joliet-Link-Tabelle nicht finden"	;3
- dz			"Nicht genug Speicher - bitte vergrî·ern"	;4
- dz			"Konnte Unicode-Datei nicht laden"		;5
- dz    "InDOS-Flag-Verriegelung + RESET Laufw."			;41
+ dz			"Nicht genug Speicher - bitte vergrî·ern"	;3
+ dz			"Konnte Unicode-Datei nicht laden"		;4
+ dz    "InDOS-Flag-Verriegelung + RESET Laufw."			;40
 if USEWINTIME
- dz    "Zeitzone ist"						;42
- dz    "%37s UTC%+d",10						;43
+ dz    "Zeitzone ist"						;41
+ dz    "%37s UTC%+d",10						;42
 endif
 ifdef PROFILE
  dz    "Profile.",10						;ProfileNr
@@ -8125,11 +8120,7 @@ ifdef PROFILE
  dz    "Calibrating profile.",10				;+3
  dz    "Profile timing constant = %lu000",10			;+4
  dz    "Error running calibration",10				;+5
- if USEWINTIME
- ProfileNr = 44
- else
- ProfileNr = 42
- endif
+ ProfileNr = 41 + 2 * USEWINTIME
 endif
 
 texte_englisch:
@@ -8171,7 +8162,7 @@ endif
   db   "		- ms[:|=]bytes	declare size of short path, 16..141",10
   db   "		- ml[:|=]bytes	declare size of long path, 16..1024",10
   db   "		- mn[:|=]bytes	declare size of long name, 13..512",10
-  db   "		- p[:|=]path	declare working directory for .TBL/.JLT/.386",10
+  db   "		- p[:|=]path	declare working directory for .TBL/.386",10
   db   "		- l{d|e|f|t}	set language (German|English|French|Turkish)",10
   db   "Environment:	TZ=xxxNyyy	time zone N for time conversion, no DST usage",10
   db   "Email:    %s",10
@@ -8205,13 +8196,12 @@ endif
  dz    "Last error: %u - "					;35  =   0
  dz			"user had denied write access"			;1
  dz			"couldn't expand FAT directory"			;2
- dz			"couldn't find a Joliet Link Table"		;3
- dz			"not enough memory - increase heap"		;4
- dz			"couldn't auto-load Unicode table"		;5
- dz    "InDOS flag and RESET drive usage"			;41
+ dz			"not enough memory - increase heap"		;3
+ dz			"couldn't auto-load Unicode table"		;4
+ dz    "InDOS flag and RESET drive usage"			;40
 if USEWINTIME
- dz    "Timezone is"						;42
- dz    "%35s UTC%+d",10						;43
+ dz    "Timezone is"						;41
+ dz    "%35s UTC%+d",10						;42
 endif
 ifdef PROFILE
  dz    "Profile.",10						;ProfileNr
