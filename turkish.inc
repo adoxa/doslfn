@@ -1,7 +1,7 @@
 ;Texte_tuerkisch:	;(DOS CP857)
  dz	10							;0
- dz    "yksek"							;1
- dz    "%u bayt kullanarak yklendi."				;2
+ dz    "%u bayt kullanarak yklendi."				;1
+ dz    "yksek belle§e %u bayt kullanarak yklendi."		;2
  dz 10,"%s Unikod tablo dosyas bulunamad/a‡lamad!"		;3
  dz 10,"%s dosyasnda yanlŸ i‡erik veya okunamad!"		;4
  dz    "devre dŸ."						;5

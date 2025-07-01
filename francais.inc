@@ -1,7 +1,7 @@
 ;Texte_franzoesisch:	;(DOS CP850)
  dz	10							;0
- dz    "haute"							;1
- dz    "charg‚ en consommant %u octets."			;2
+ dz    "charg‚, a consomm‚ %u octets."					;1
+ dz    "en m‚moire haute charg‚, a consomm‚ %u octets."			;2
  dz 10,"Impossible de trouver/ouvrir le fichier de table Unicode %s !"	;3
  dz 10,"Mauvais contenu du fichier %s ou impossible de lire !"	;4
  dz    "d‚sactiv‚."						;5

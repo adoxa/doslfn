@@ -6657,10 +6657,8 @@ endif
 ;Test des Hochladens und Anzeige
 	mov	ax,cs
 	cmp	ah,0a0h
-	mov	bl,1		;$HOCH
-	jc	@@NoHi		;unten
-	call	AusgabeStringNr
-@@NoHi:	inc	bl		;Installiere
+	setnc	bl		;low/high
+	inc	bx		;Installiere
 ;DosLFN aktivieren und Speicherverbrauch anzeigen
 Activate:
 	or	[es:Ctrl0],80h	;setzen
@@ -6681,7 +6679,7 @@ TXTOut:	push	ax
 	mov	bh,bl
 	call	AusgabeNL
 	cmp	bh,2		;Meldung "Resident"?
-	jnz	@@exi		;nein, normales Programmende
+	ja	@@exi		;nein, normales Programmende
 	mov	dx,[LocalHeap]
 	add	dx,[LocalHeapSize]
 	shr	dx,4		;Speicherbedarf in Paragrafen umrechnen
@@ -7659,6 +7657,7 @@ SetStringResourcePointer:
 endp
 
 proc help	;Hilfe Option "H" oder "?", kein Return
+	PRINT	Text1		;authors & date
 	push	ofs Downl$
 	push	ofs djmh$
 	mov	ax,ofs ejmh$
@@ -8014,14 +8013,15 @@ FIRSTERRORSTRING = 35
 ;Email$: dz	"henrik.haftmann@e-technik.tu-chemnitz.de"
 ejmh$:	dz	"jadoxa@yahoo.com.au"
 Downl$: dz	"https://www-user.tu-chemnitz.de/~heha/hsn/dos/doslfn/"
-djmh$:	dz	"http://doslfn.adoxa.vze.com/"
+djmh$:	dz	"http://adoxa.altervista.org/doslfn/"
 
-Text0	db	"DOSLFN 0.41f (haftmann#software & jmh 4/2022): $"
+Text0	db	"DOSLFN 0.42: $"
+Text1	db	"haftmann#software & jmh 7/2025  $"
 
 Texte_deutsch:
  dz	10							;0
- dz    "hoch"							;1
- dz    "geladen, verbraucht %u Bytes."				;2
+ dz    "geladen, verbraucht %u Bytes."				;1
+ dz    "hochgeladen, verbraucht %u Bytes."			;2
  dz 10,"Kann Unicode-Datei %s nicht finden/”ffnen!"		;3
  dz 10,"Falscher Inhalt der Datei %s oder Lese-Fehler!"		;4
  dz    "deaktiviert."						;5
@@ -8110,8 +8110,8 @@ endif
 
 texte_englisch:
  dz	10							;0
- dz    "high"							;1
- dz    "loaded consuming %u bytes."				;2
+ dz    "loaded, consuming %u bytes."				;1
+ dz    "loaded high, consuming %u bytes."			;2
  dz 10,"Cannot find/open Unicode table file %s!"		;3
  dz 10,"Wrong content of file %s or cannot read!"		;4
  dz    "disabled."						;5
