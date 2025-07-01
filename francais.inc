@@ -39,7 +39,9 @@ endif
   db   "		- mn[:|=]octets	d‚clarer la taille du nom long, 13..512",10
   db   "		- p[:|=]chemin	d‚clarer le dossier de travail pour .TBL/.386",10
   db   "		- l{d|e|f|t}	d‚finir la langue (allemand|anglais|fran‡ais|turc)",10
+if USEWINTIME
   db   "Environnement : TZ=xxxNyyy	fuseau horaire N pour conversion, pas d'heure d'hiver",10
+endif
   db   "E-mail :         %s",10
   db   "T‚l‚chargement : %s",10
   dz   "                 %s"

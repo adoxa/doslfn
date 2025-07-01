@@ -39,7 +39,9 @@ endif
   db   "		- mn[:|=]bayt	uzun ismin boyutunu beyan et, 13..512",10
   db   "		- p[:|=]yol 	.TBL/.386 iáin áalçüma dizinini beyan et",10
   db   "		- l{d|e|f|t}	dili ayarla (Almanca|òngilizce|Fransçzca|TÅrkáe)",10
+if USEWINTIME
   db   "Ortam: 		TZ=xxxNyyy	saat dilimi dînÅüÅmÅ iáin N saat dilimi, yaz saati yok",10
+endif
   db   "E-posta: %s",10
   db   "òndirme: %s",10
   dz   "         %s"

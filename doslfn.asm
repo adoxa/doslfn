@@ -7102,28 +7102,27 @@ endp
 if USEWINTIME
 proc FindTZ
 ;Find the TZ environment variable
-;PE: Z=1, TZ found at ES:DI
-;    Z=0, no TZ in the environment (or possibly it was first)
-	mov	ax,[2ch]	;Segment Environment
-	push	ax
-	dec	ax		;MCB
-	mov	es,ax
-	mov	cx,[es:3]	;size of environment (paras)
-	shl	cx,4		;size in bytes
-	pop	es
+;PA: Z=0, TZ value at ES:DI
+;    Z=1, no TZ in the environment
+	mov	es,[2ch]	;Segment Environment
 	xor	di,di
-	mov	eax,'=ZT' shl 8
-@@such: repne	scasb		;search for NUL of previous variable
-	jne	@@e		; (assume TZ is not first)
-	cmp	[es:di-1],eax
+	mov	ax,'=' shl 8
+	db	0B9h		;mov cx,< irgendeine Zahl > 7FFF >
+@@such: repne	scasb
+	scasb
+	je	@@e
+	cmp	[es:di+1],ah
 	jne	@@such
+	cmp	[wo es:di-1],'ZT'
+	jne	@@such
+	scasw
 @@e:	ret
 endp
 
 proc CalcTZ
 ;Convert TZ string to decimal and adjust [TimeOffset] accordingly
-;PA: DS:SI -> TZ string
-;PE: [TimeOffset] adjusted, SI at end of string
+;PE: DS:SI -> TZ string
+;PA: [TimeOffset] adjusted, SI at end of string
 @@let:	lodsb			;skip the letters
 	cmp	al,0
 	je	@@e
@@ -7160,9 +7159,9 @@ proc gettz
 ;VR: alle
 	push	ds es
 	 call	FindTZ
-	 jnz	@@e
+	 jz	@@e
 	 LD	ds,es
-	 lea	si,[di+3]
+	 mov	si,di
 	 call	CalcTZ
 @@e:	pop es ds
 	ret
@@ -8059,7 +8058,9 @@ endif
   db   "		- mn[:|=]bytes	declare size of long name, 13..512",10
   db   "		- p[:|=]path	Arbeitsverzeichnis (.TBL/.386) festlegen",10
   db   "		- l{d|e|f|t}	Sprache setzen (deutsch|englisch|franzîsisch|tÅrkisch)",10
+if USEWINTIME
   db   "Umgebung: 	TZ=xxxNyyy	Zeitzone N fÅr Zeitumrechnung, ohne DST",10
+endif
   db   "Email:    %s",10
   db   "Download: %s",10
   dz   "          %s"
@@ -8148,7 +8149,9 @@ endif
   db   "		- mn[:|=]bytes	declare size of long name, 13..512",10
   db   "		- p[:|=]path	declare working directory for .TBL/.386",10
   db   "		- l{d|e|f|t}	set language (German|English|French|Turkish)",10
+if USEWINTIME
   db   "Environment:	TZ=xxxNyyy	time zone N for time conversion, no DST usage",10
+endif
   db   "Email:    %s",10
   db   "Download: %s",10
   dz   "          %s"
