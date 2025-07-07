@@ -1336,7 +1336,8 @@ endif
 ;** Initialized Constant and Data Area **
 ;****************************************
 
-language	db	'E'	;'D'eutsch,'F'rancais,'N'ihongo,'R'ussky?
+NLSpath 	db	'..\NLS\DOSLFN.'
+language	db	'EN',0,0
 UniXlat		dw	0	;0 bedeutet hier: OEM = ISO-Latin-1
 rwrec		tRWRec	<?,4,ofs Sektor>
 if USECP
@@ -6502,7 +6503,7 @@ endp
 std_size = $ - Fat_RW_std
 
 
-String_Table	dw	?
+String_Table	dw	Texte
 LocalHeapSize	dw	?	;Angabe bei /M
 		dw	600	;1 Sektor und noch etwas Platz (nicht fÅr CD)
 		dw	50000	;>50KB ist bei 64KB Segment kaum mîglich
@@ -7070,30 +7071,157 @@ proc getargv0
 ;PA: [workdir] gesetzt
 ;    Eigener Programmname auf Pfad ohne Backslash gekÅrzt
 ;    AX=0
+;    ES=environment segment
 ;VR: AX,CX,SI,DI
-	push	es
-	 mov	es,[2ch]	;Segment Environment
-	 xor	di,di
-	 xor	ax,ax
-	 db	0B9h		;mov cx,< irgendeine Zahl > 7FFF >
-@@such:	  repne	scasb
-	 scasb
-	 jnz	@@such
-	 scasw			;number of "extensions"
-	 jz	@@cannot	;no extension (DOS <3)
-	 call	set_workdir
-	 mov	si,di
-	 repne	scasb
-	 dec	di
-	 mov	al,'\'
-	 std
-	 repne	scasb
-	 cld
-	 inc	di
-	 mov	al,0
-	 stosb			;make a path from file name
+	mov	es,[2ch]	;Segment Environment
+	xor	di,di
+	xor	ax,ax
+	db	0B9h		;mov cx,< irgendeine Zahl > 7FFF >
+@@such:  repne	scasb
+	scasb
+	jnz	@@such
+	scasw			;number of "extensions"
+	jz	@@cannot	;no extension (DOS <3)
+	call	set_workdir
+	mov	si,di
+	repne	scasb
+	dec	di
+	mov	al,'\'
+	std
+	repne	scasb
+	cld
+	inc	di
+	mov	al,0
+	stosb			;make a path from file name
 @@cannot:
-	pop	es
+	ret
+endp
+
+proc SetLang
+;Find the LANG environment variable, set language accordingly and read the
+;translation from argv0\NLS or argv0\..\NLS.
+;PE: ES=environment segment
+;    AL=0 (these are set from getargv0 above)
+	xor	di,di
+	mov	ah,'='
+	db	0B9h		;mov cx,< irgendeine Zahl > 7FFF >
+@@such: repne	scasb
+	scasb
+	je	@@e		;end of environment
+	cmp	[es:di+3],ah
+	jne	@@such
+	cmp	[dwo es:di-1],'GNAL'
+	jne	@@such
+	mov	ax,[es:di+4]	;only use the first three characters of LANG
+	mov	[wo language],ax
+	mov	al,[es:di+6]
+	mov	[language+2],al
+@@e:	LD	es,ds
+	mov	di,ofs fname_buffer
+	mov	dx,di
+	call	CopyWorkDir
+	mov	si,ofs NLSpath+3
+	push	di
+	call	strcpy
+	pop	di
+	DOS	3D00h		;zum Lesen îffnen
+	jnc	@@ok
+	mov	si,ofs NLSpath
+	call	strcpy
+	DOS	3D00h
+	jc	@@r
+@@ok:	xchg	bx,ax
+	mov	di,ofs Texte+2	;string 0 is always a newline
+@@read: call	getc
+	cmp	al,0		;EOF
+	je	@@cls
+	cmp	al,'#'          ;comment
+	je	@@skipln
+	cmp	al,13		;EOL
+	je	@@read
+	cmp	al,'?'          ;conditional lines
+	je	@@cond
+	cmp	al,'"'          ;quote lines
+	je	@@quot
+	cmp	[incond],ah
+	jne	@@skipln
+@@copy: stosb
+	call	getc
+	cmp	al,13
+	je	@@eol
+	cmp	al,0
+	jne	@@copy
+@@nul:	mov	al,0
+@@cp:	stosb
+	jmp	@@read
+@@eol:	cmp	[inquot],ah
+	je	@@nul
+	mov	al,10
+	jmp	@@cp
+@@quot: xor	[inquot],1
+	jnz	@@skipln
+	mov	[di-1],ah
+	jmp	@@skipln
+@@cond: call	getc
+	cmp	al,13
+	je	@@cend
+ife USEWINTIME
+	cmp	al,'U'
+	je	@@cbeg
+endif
+ifndef PROFILE
+	cmp	al,'P'
+	je	@@cbeg
+endif
+	jmp	@@skipln
+@@cend: mov	[incond],ah
+	jmp	@@read
+@@cbeg: mov	[incond],1
+@@skipln:
+	call	getc
+	cmp	al,13
+	je	@@read
+	cmp	al,0
+	jne	@@skipln
+@@cls:	DOS	3Eh
+@@r:	ret
+endp
+
+proc getc
+;Read a character from file, ignoring CR, translating LF to CR, '\n' to LF and
+;'\s' to space (to prevent a trailing space).
+;PE: BX=file handle
+;PA: AL=character (0=EOF)
+	mov	al,0
+	xchg	al,[nextc]
+	cmp	al,0
+	jne	@@r
+@@n:	call	@@getc
+	cmp	al,13
+	je	@@n
+	cmp	al,10
+	je	@@eol
+	cmp	al,'\'
+	jne	@@r
+	call	@@getc
+	cmp	al,'n'
+	je	@@nl
+	cmp	al,'s'
+	je	@@sp
+	mov	[nextc],al
+	mov	al,'\'
+@@r:	ret
+@@nl:	mov	al,10
+	ret
+@@eol:	mov	al,13
+	ret
+@@sp:	mov	al,' '
+	ret
+@@getc: push	0
+	mov	dx,sp
+	mov	cx,1
+	DOS	3Fh
+	pop	ax
 	ret
 endp
 
@@ -7197,7 +7325,33 @@ endif ;USEWINTIME
 proc transient
 ;== 1. Meldung ==
 	PRINT	Text0		;Meldung sofort
-;== 2. Installations-Test ==
+;== 2. Standard-Sprache festlegen ==
+	mov	dx,ofs fname_buffer
+	DOS	3800h		;Land-Info holen
+	jc	@@k
+	xchg	bx,ax
+	LD	es,ds
+	mov	di,ofs country_codes
+	mov	cx,country_codes_size
+	repne	scasw
+	jne	@@k
+	mov	ax,[di]
+	mov	[wo language],ax
+@@k:
+;== 3. argv[0] extrahieren, daraus Pfad fÅr WorkDir basteln ==
+	call	getargv0
+	call	SetLang
+;== 4. Installations-Test ==
+if USEDBCS
+	mov	bx,-1
+	MUX	4310h
+	inc	bx
+	jz	@@nx
+	dec	bx
+	mov	[wo LOW XMSaddr],bx
+	mov	[wo HIGH XMSaddr],es
+@@nx:
+endif
 	call	InstChk		;setzt ggf. ES auf Fremdroutine
 	;nun ch=Statusregister:
 	;Bit0&1: Deinstallation nicht mîglich
@@ -7205,44 +7359,9 @@ proc transient
 	;Bit5: Option M gegeben
 	;Bit6: Schalter angegeben
 	;Bit7:   Noch nicht installiert
-if USEDBCS
-	push	es
-	 mov	bx,-1
-	 MUX	4310h
-	 inc	bx
-	 jz	@@nx
-	 dec	bx
-	 mov	[wo LOW XMSaddr],bx
-	 mov	[wo HIGH XMSaddr],es
-@@nx:	pop	es
-endif
 	test	ch,bit 7
 	jz	@@nostartup	;resident
-;== 3. Standard-Sprache festlegen ==
 	push	cx
-	 mov	dx,ofs fname_buffer
-	 DOS	3800h		;Land-Info holen
-	 jc	@@k
-	 xchg	bx,ax		;AX ist besser im Zugriff!
-	 or	ah,ah
-	 jnz	@@k
-	 mov	ah,'D'
-	 cmp	al,43		;ôsterreich
-	 je	@@de
-	 cmp	al,49		;Deutschland
-	 je	@@de
-	 mov	ah,'F'
-	 cmp	al,33		;France
-	 je	@@de
-	 cmp	al,2		;Canada (French)
-	 je	@@de
-	 mov	ah,'T'
-	 cmp	al,90		;Turkey
-	 jne	@@k
-@@de:	 mov	[language],ah
-@@k:
-;== 4. argv[0] extrahieren, daraus Pfad fÅr WorkDir basteln ==
-	 call	getargv0
 ;== 5. set appropriate timezone ==
 if USEWINTIME
 	 call	gettz
@@ -7292,8 +7411,6 @@ endif
 @@cddone:
 	pop	cx
 @@nostartup:
-	mov	al,[es:language]
-	call	SetStringResourcePointer
 ;== 8. Kommandozeile parsen und Aktionen durchfÅhren ==
 	mov	si,81h
 	cld
@@ -7331,7 +7448,6 @@ if USEWINTIME
 endif
 		dvt	'Z',LoadUni
 		dvt	'M',SetHeapSize
-		dvt	'L',SetLang
 		dvt	'P',SetWorkDir
 		dvt	'S',ShowStatus
 		db	0
@@ -7634,25 +7750,6 @@ proc SetPlusMinus
 	jmp	@@e
 @@set:	or	[es:ctrl0],cl
 @@e:	BSET	ch,bit 6	;irgendein Schalter
-	ret
-endp
-
-proc SetLang
-	lodsb
-	call	Upcase
-	mov	[es:language],al
-SetStringResourcePointer:
-	cmp	al,'D'
-	mov	dx,ofs Texte_deutsch
-	je	@@de
-	cmp	al,'F'
-	mov	dx,ofs Texte_franzoesisch
-	je	@@de
-	cmp	al,'T'
-	mov	dx,ofs Texte_tuerkisch
-	je	@@de
-	mov	dx,ofs Texte_englisch
-@@de:	mov	[String_Table],dx
 	ret
 endp
 
@@ -8009,6 +8106,9 @@ endp
 ;bevor der Heap (Åber die Strings hinweg) initialisiert wird.
 
 FIRSTERRORSTRING = 35
+ifdef PROFILE
+ ProfileNr = 40 + 2 * USEWINTIME
+endif
 
 ;Email$: dz	"henrik.haftmann@e-technik.tu-chemnitz.de"
 ejmh$:	dz	"jadoxa@yahoo.com.au"
@@ -8018,194 +8118,35 @@ djmh$:	dz	"http://adoxa.altervista.org/doslfn/"
 Text0	db	"DOSLFN 0.42: $"
 Text1	db	"haftmann#software & jmh 7/2025  $"
 
-Texte_deutsch:
- dz	10							;0
- dz    "geladen, verbraucht %u Bytes."				;1
- dz    "hochgeladen, verbraucht %u Bytes."			;2
- dz 10,"Kann Unicode-Datei %s nicht finden/îffnen!"		;3
- dz 10,"Falscher Inhalt der Datei %s oder Lese-Fehler!"		;4
- dz    "deaktiviert."						;5
- dz 10,"(Andere TSR stahl Int21 und/oder Int2F)"		;6
- dz    "Noch nicht installiert!"				;7
- dz    "DOS4+ erforderlich!"					;8
- dz    "Schalter angenommen."					;9
- db    "++ FREEWARE ++",10					;10
-  db   "Programm fÅr lange Dateinamen unter nacktem DOS.",10
-  db   "Aktionen:	- (nichts)	TSR laden oder aktivieren",10
-  db   "		- h oder ?	diese Hilfe",10
-  db   "		- d		DOSLFN deaktivieren",10
-  db   "		- s		Status und Einstellungen",10
-ifdef PROFILE
-  db   "		- p		show profile data",10
-  db   "		- pr		reset profile data",10
-  db   "		- pc		calibrate profile timing",10
-endif
-  db   "		- u		TSR entfernen",10
-  db   "Schalter:	- w{+|-}	* Schreibzugriffe",10
-  db   "		- ~{+|-}	* Tilde (ich hasse Schlangen)",10
-  db   "		- t{+|-}	* Tunneleffekt (fÅr Editoren)",10
-  db   "		- f{+|-}	* Fallback-Modus - supply LFN for all drives",10
-  db   "		- c{+|-}	* CDROM-UnterstÅtzung",10
-  db   "		- i{+|-}	* InDOS-Flag-Wiederaufrufsperre fÅr TSRs",10
-  db   "		- r{+|-}	* Schreibschutz-Attribut fÅr CDROM-Dateien",10
-if USEWINTIME
-  db   "		- o[N]		* set time zone N or read TZ if absent",10
-endif
-  db   "		- z[:|=]table	Unicode-Tabelle (.TBL-Volkov-Format) laden",10
-  db   "		- m[:|=]bytes	Grî·e des internen Heaps festlegen, 600..50000",10
-  db   "		- ms[:|=]bytes	declare size of short path, 16..141",10
-  db   "		- ml[:|=]bytes	declare size of long path, 16..1024",10
-  db   "		- mn[:|=]bytes	declare size of long name, 13..512",10
-  db   "		- p[:|=]path	Arbeitsverzeichnis (.TBL/.386) festlegen",10
-  db   "		- l{d|e|f|t}	Sprache setzen (deutsch|englisch|franzîsisch|tÅrkisch)",10
-if USEWINTIME
-  db   "Umgebung: 	TZ=xxxNyyy	Zeitzone N fÅr Zeitumrechnung, ohne DST",10
-endif
-  db   "Email:    %s",10
-  db   "Download: %s",10
-  dz   "          %s"
+country_codes:
+	dw	 43,'DE'	; Austria
+	dw	  2,'FR'	; Canadian-French
+	dw	 86,'ZH'	; China
+	dw	 45,'DK'	; Denmark
+	dw	358,'FI'	; Finland
+	dw	 33,'FR'	; France
+	dw	 49,'DE'	; Germany
+	dw	 36,'HU'	; Hungary
+	dw	 39,'IT'	; Italy
+	dw	 81,'JA'	; Japan
+	dw	 31,'NL'	; Netherlands
+	dw	 48,'PL'	; Poland
+	dw	351,'PT'	; Portugal
+	dw	  7,'RU'	; Russia
+	dw	386,'SL'	; Slovenia
+	dw	 34,'ES'	; Spain
+	dw	 46,'SV'	; Sweden
+	dw	 90,'TR'	; Turkey
+country_codes_size = ($ - country_codes) / 2
 
- dz    "aktiv"							;11
- dz    "reaktiviert."						;12
- dz    "vom Speicher entfernt."					;13
- dz    "%7lu Lesezugriffe"					;14
- dz    "%7lu Schreibzugriffe"					;15
- dz    "%7lu Int21/AH=71-Aufrufe"				;16
- dz    "Schreibzugriffe"					;17
- dz    "Schlangen"						;18
- dz    "Tunneleffekt"						;19
- dz    "CDROM-UnterstÅtzung"					;20
- dz    "Fallback-Modus"						;21
- dz    "Schreibschutz-Attribut fÅr CD-Dateien"			;22
- dz    "UngÅltige Heap-Grî·e"					;23
- dz    "EIN"							;24
- dz    "AUS"							;25
- dz    "%37s %s",10						;26
- dz    "Verzeichnis existiert nicht!"				;27
- dz    "Kann Verzeichnis nicht setzen."				;28
- dz    "Kann Heap-Grî·e nicht verÑndern."			;29
- dz    "Kann Schalter nicht annehmen."				;30
- dz 10,"Dazu vorher TSR entfernen."				;31
- dz 10,"In einem DOS-Fenster dieser Windows-Version ist DOSLFN sinnlos!";32
- dz    "Heap: gesamt=%u, used=%u, frei=%u, grî·ter Block=%u Bytes",10	;33
- dz    "InDOS-Flag-Verriegelung + RESET Laufw."			;34
- dz    "Letzter Fehler: %u - "					;35  =	 0
- dz			"Verbotener Schreibzugriff"			;1
- dz			"Konnte Verzeichnis nicht expandieren"		;2
- dz			"Nicht genug Speicher - bitte vergrî·ern"	;3
- dz			"Konnte Unicode-Datei nicht laden"		;4
-if USEWINTIME
- dz    "Zeitzone ist"						;40
- dz    "%37s UTC%+d",10						;41
-endif
-ifdef PROFILE
- dz    "Profile.",10						;ProfileNr
- dz    "Profile reset.",10					;+1
- dz    "%7lu %2d.%03d %s",10					;+2
- dz    "Calibrating profile.",10				;+3
- dz    "Profile timing constant = %lu000",10			;+4
- dz    "Error running calibration",10				;+5
- ProfileNr = 40 + 2 * USEWINTIME
-endif
+nextc	db	0
+incond	db	0
+inquot	db	0
 
-texte_englisch:
- dz	10							;0
- dz    "loaded, consuming %u bytes."				;1
- dz    "loaded high, consuming %u bytes."			;2
- dz 10,"Cannot find/open Unicode table file %s!"		;3
- dz 10,"Wrong content of file %s or cannot read!"		;4
- dz    "disabled."						;5
- dz 10,"(Another TSR grabbed Int21 and/or Int2F)"		;6
- dz    "Not yet installed!"					;7
- dz    "requires at least DOS version 4!"			;8
- dz    "switch(es) taken"					;9
- db    "++ FREEWARE ++",10					;10
-  db   "Program that supports long filenames in pure DOS.",10
-  db   "USE THIS PROGRAM AT YOUR OWN RISK, DATA LOSS MAY BE POSSIBLE",10
-  db   "Actions:	- (nothing)	load and/or enable TSR",10
-  db   "		- h or ?	this help",10
-  db   "		- d		disable DOSLFN",10
-  db   "		- s		show status and settings",10
-ifdef PROFILE
-  db   "		- p		show profile data",10
-  db   "		- pr		reset profile data",10
-  db   "		- pc		calibrate profile timing",10
-endif
-  db   "		- u		unload TSR",10
-  db   "Switches:	- w{+|-}	* write access",10
-  db   "		- ~{+|-}	* NameNumericTail - tilde usage (I hate snakes)",10
-  db   "		- t{+|-}	* PreserveLongNames - tunnel effect",10
-  db   "		- f{+|-}	* fallback mode - supply LFN for all drives",10
-  db   "		- c{+|-}	* CDROM support",10
-  db   "		- i{+|-}	* reenter lock via InDOS flag + RESET DRIVE",10
-  db   "		- r{+|-}	* read-only bit for CDROM files",10
-if USEWINTIME
-  db   "		- o[N]		* set time zone N or read TZ if absent",10
-endif
-  db   "		- z[:|=]table	load Unicode table (format Volkov .TBL)",10
-  db   "		- m[:|=]bytes	declare size of internal heap, 600..50000",10
-  db   "		- ms[:|=]bytes	declare size of short path, 16..141",10
-  db   "		- ml[:|=]bytes	declare size of long path, 16..1024",10
-  db   "		- mn[:|=]bytes	declare size of long name, 13..512",10
-  db   "		- p[:|=]path	declare working directory for .TBL/.386",10
-  db   "		- l{d|e|f|t}	set language (German|English|French|Turkish)",10
-if USEWINTIME
-  db   "Environment:	TZ=xxxNyyy	time zone N for time conversion, no DST usage",10
-endif
-  db   "Email:    %s",10
-  db   "Download: %s",10
-  dz   "          %s"
-
- dz    "active"							;11
- dz    "enabled."						;12
- dz    "removed from memory."					;13
- dz    "%7lu read accesses"					;14
- dz    "%7lu write accesses"					;15
- dz    "%7lu Int21/AH=71 calls"					;16
- dz    "write access"						;17
- dz    "tilde usage"						;18
- dz    "tunnel effect"						;19
- dz    "CDROM support"						;20
- dz    "fallback mode"						;21
- dz    "Read-Only bit set on CD files"				;22
- dz    "invalid heap size"					;23
- dz    "ON"							;24
- dz    "OFF"							;25
- dz    "%35s %s",10						;26
- dz    "directory doesn't exist!"				;27
- dz    "cannot set workdir"					;28
- dz    "cannot resize heap"					;29
- dz    "switch rejected"					;30
- dz			 " - unload TSR first"			;31
- dz 10,"This program is useless in a DOS box of this Windows version!";32
- dz    "Heap: size=%u, used=%u, free=%u, max-avail=%u Bytes",10 ;33
- dz    "InDOS flag and RESET drive usage"			;34
- dz    "Last error: %u - "					;35  =   0
- dz			"user had denied write access"			;1
- dz			"couldn't expand FAT directory"			;2
- dz			"not enough memory - increase heap"		;3
- dz			"couldn't auto-load Unicode table"		;4
-if USEWINTIME
- dz    "Timezone is"						;40
- dz    "%35s UTC%+d",10						;41
-endif
-ifdef PROFILE
- dz    "Profile.",10						;ProfileNr
- dz    "Profile reset.",10					;+1
- dz    "%7lu %2d.%03d %s",10					;+2
- dz    "Calibrating profile.",10				;+3
- dz    "Profile timing constant = %lu000",10			;+4
- dz    "Error running calibration",10				;+5
-endif
-
-Texte_franzoesisch:
-	include "francais.inc"
-
-Texte_tuerkisch:
-	include "turkish.inc"
-
-Texte_japanisch:
-;	include	"nihongo.inc"
+Texte:
+	include "text.inc"
+; reserve some bytes for longer translations
+		db	4000 - ($ - Texte) dup (?)
 
 
 StdDTA		TSearchRec <>		;im transienten Teil
