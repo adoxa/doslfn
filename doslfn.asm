@@ -3988,6 +3988,7 @@ proc lfn_creat
 	mov	cx,32-11
 	rep	stosb
 	or	[PFlags],PF_Install_Short
+	call	ResetDrv
 	call	install_long_filename_noflagtest
 	end_profile
 	jc	SetErr5

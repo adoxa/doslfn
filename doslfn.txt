@@ -714,6 +714,7 @@ Version 0.42 (7/2025)
 - always check for a device (e.g. "con.*" is still a device)
 - remove remaining references to Joliet tables
 - replace undocumented SETALC instruction (unsupported on some clones)
+- reset drive before creating LFN (fixes a FreeDOS FDNPKG issue)
 * adjusted some messages
 * updated German (courtesy of Wilhelm Spiegl) and Turkish (bitigchi from
   fd-nls) translations
