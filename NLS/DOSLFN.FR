@@ -1,7 +1,7 @@
 # Fran‡ais, CP850/858
 
 charg‚, a consomm‚ %u octets.
-en m‚moire haute charg‚, a consomm‚ %u octets.
+charg‚ en m‚moire haute, a consomm‚ %u octets.
 \nImpossible de trouver/ouvrir le fichier de table Unicode %s !
 \nMauvais contenu du fichier %s ou impossible de lire !
 d‚sactiv‚.

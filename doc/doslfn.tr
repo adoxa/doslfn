@@ -211,8 +211,8 @@ TZ Saat dilimi ortam de§iŸkeni - FAT zaman damgasn Win32 zaman bi‡imine
 
 LANG ortam de§iŸkeni. DOSLFN ‡ok dillidir; otomatik olarak lke koduna veya bu
   de§iŸkene dayal bir lisan se‡er. Mesajlar NLS dizinindeki dosyalardan
-  okunur, ki bu dizin ikili dosya ile ayn dizinde veya yakn bir dizinde
-  bulunabilir.
+  okunur (%LANG% unsurunun ilk ‡ karakteri uzant olarak kullanlarak),
+  ki bu dizin ikili dosya ile ayn dizinde veya yakn bir dizinde bulunabilir.
 
 ** E§er profil oluŸturma etkinse **
 
@@ -769,12 +769,17 @@ Srm 0.41f (4/2022)
 * temel bir srm denetimi ekle (farklysa kurulmamŸ gibi yap)
 
 Srm 0.42 (7/2025)
+- cihazlar i‡in daima kontrol et (mesela "con.*" bir cihazdr)
 - Joliet tablolarna kalan referanslar kaldr
+- belgelendirilmemiŸ SETALC komutunu de§iŸtir (baz klonlarda desteklenmez)
+- LFN oluŸturmadan srcy sfrla (bir FreeDOS FDNPKG hatasn dzeltir)
 * baz mesajlar tekrar dzenlendi
 * Almanca (teŸekkrler Wilhelm Spiegl) ve Trk‡e (fd-nls'den bitigchi'ye
   teŸekkrler) tercmeler gncellendi
-+ -l kaldrld, de§iŸken olarak kullanlan %LANG%; mesajlar bir NLS
++ -l kaldrld, de§iŸken olarak %LANG% kullanlr; mesajlar bir NLS
    dizinindeki dosyalardan okunur
+* 386 varsay (386 talimatlar testten evvel kullanlyordu, kimse Ÿikayet
+  etmedi)
 
 
 Kalan bilinen hatalar:

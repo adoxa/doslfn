@@ -219,8 +219,9 @@ TZ Variable d'environnement de fuseau horaire - pour convertir l'horodatage FAT
 LANG variable d'environnement pour s‚lectionner la langue. DOSLFN est
   plurilingue ; il choisit une langue automatiquement en se fondant sur le code
   de pays ou sur cette variable. Les messages sont lus depuis des fichiers dans
-  le r‚pertoire NLS, qui peut se trouver dans le mˆme r‚pertoire que le binaire
-  ou bien dans un r‚pertoire  proche.
+  le r‚pertoire NLS (en utilisant les trois premiers caractŠres de %LANG%
+  en tant qu'extension), qui peut se trouver dans le mˆme r‚pertoire que le
+  binaire ou bien dans un r‚pertoire proche.
 
 ** Si le profilage est activ‚ **
 
@@ -842,12 +843,18 @@ Version 0.41f (4/2022)
   si elle n'‚tait pas install‚e)
 
 Version 0.42 (7/2025)
+- toujours v‚rifier si un p‚riph‚rique est pr‚sent (par exemple "con.*"
+  est toujours un p‚riph‚rique)
 - suppression des r‚f‚rences restantes aux tables Joliet
+- remplacement de l'instruction SETALC non document‚e (non prise en charge
+  sur certains clones)
 * ajustement de certains messages
 * mise … jour des traductions allemande (merci … Wilhelm Spiegl) et turque
   (merci … bitigchi de fd-nls)
 + suppression de -l, utilisation de %LANG%; les messages sont lus depuis des
   fichiers dans un r‚pertoire NLS
+* assumer 386 (les instructions 386 ont ‚t‚ utilis‚es avant le test, personne
+  ne s'est plaint)
 
 
 Bugs connus restants :
@@ -872,6 +879,6 @@ Bugs connus restants :
 - NTFSDOS retourne parfois des horodatages erron‚s - c'est un bug dans NTFSDOS.
 
 
-e-mail :	 <jadoxa@yahoo.com.au>
+courriel :	 <jadoxa@yahoo.com.au>
 T‚l‚chargement : http://adoxa.altervista.org/doslfn/
 		 https://www-user.tu-chemnitz.de/~heha/hsn/dos/doslfn/
