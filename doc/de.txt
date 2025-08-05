@@ -24,7 +24,7 @@ Speicher, viel zu viel! Das Programm kann keine Dateien und Verzeich-
 nisse mit Kleinbuchstaben erstellen (warum??), es gibt keine Möglich-
 keit, den Schlangen zu entkommen (Tilden, analog dem Registrierungs-
 schlüssel NameNumericTail=0), und nicht zuletzt unterstützt es Umlaute
-nicht korrekt. 
+nicht korrekt.
 
 
 DER EIGENE VERSUCH:
@@ -196,7 +196,7 @@ m DOSLFN benötigt einen internen Heap zum Speichern von Daten; meistens
 
 m[sln] Geben Sie die maximale Größe des Kurznamenpfads (80), Langnamen-
   pfades (260) und des Dateinamen (256) an. Beachten Sie, dass DOS
-  obwohl es nicht in einen extralangen Pfad hineinwechseln wird, 
+  obwohl es nicht in einen extralangen Pfad hineinwechseln wird,
   er immer noch explizit angegeben werden kann, so dass der Wert von 80
   nicht genug sein kann. Siehe MVALUES unten.
 
@@ -235,11 +235,12 @@ TZ Umgebungsvariable Zeitzone - zum Konvertieren des FAT-Zeitstempels
   um die korrekte FAT-Zeit (=immer lokal) zu berechnen - deshalb ist es
   also besser intern durch das Win32-Zeitformat zu gehen.
 
-LANG Umgebungsvariable. DOSLFN ist mehrsprachig; es wählt basierend auf
-  dem Ländercode oder der Umgebungsvariablen automatisch eine Sprache.
-  Meldungen werden aus Dateien im NLS Verzeichnis gelesen, welches im
-  selben Verzeichnis wie die Binärdatei oder in einem Geschwisterver-
-  zeichnis sein kann.
+LANG - Sprachumgebungsvariable. DOSLFN ist mehrsprachig; es wählt auto-
+  matisch eine Sprache basierend auf dem Ländercode oder dieser Variable.
+  Meldungen werden aus Dateien im NLS-Verzeichnis gelesen (mit den ersten
+  drei Zeichen von %LANG% als Erweiterung). Dieses kann sich im selben
+  Verzeichnis wie die Binärdatei oder in einem verwandten Verzeichnis
+  befinden.
 
 ** Wenn Profilerstellung aktiviert ist **
 
@@ -367,7 +368,7 @@ Aufgrund der Unterstützung eines chinesischen Benutzers vom Festland (und
 mir, der Japanisch versteht), sind zukünftige Tests auf CP932 und CP936
 beschränkt. (CP950 funktioniert angeblich auch.)
 
-Beachten Sie, dass es viel bessere Ersatzwerkzeuge für die PDOS95.BAT 
+Beachten Sie, dass es viel bessere Ersatzwerkzeuge für die PDOS95.BAT
 gibt; ich konnte das "TechWay SCS V3.2" Programm/Treiber verwenden (Dank
 an 2 wengier), welches auch unter deutschem DOS6 läuft. Eines seiner Vor-
 teile ist die automatische Erkennung gängiger Zeichensymbole und deren
@@ -863,14 +864,21 @@ Version 0.41f (4/2022)
 - Weitere Fixierungen zum Erweitern von Verzeichnissen.
 * Einfache Versionsprüfung hinzugefügt (wenn andere Progs so tun
   als wäre es nicht installiert.
-  
+
 Version 0.42 (7/2025)
-- Verbliebene Verweise auf Joliet-Tabellen entfernt.
+- Immer auf ein Gerät prüfen (z. B. ist "con.*" immer noch ein Gerät).
+- Verbleibende Verweise auf Joliet-Tabellen entfernen
+- Undokumentierte SETALC-Anweisung ersetzen (wird von einigen Klonen
+  nicht unterstützt)
+- Laufwerk vor dem Erstellen von LFN zurücksetzen (behebt ein FreeDOS-
+  FDNPKG-Problem)
 * Einige Meldungen angepasst.
-* Deutsche (mit freundlicher Unterstützung von Wilhelm Spiegl)
-  und türkische (Bitigchi von FD-NLS) Übersetzungen aktualisiert.
-+ -l entfernt, stattdessen werden %LANG% Meldungen aus Dateien in einem
-  NLS Verzeichnis gelesen, dies ist eine Anpassung an FreeDOS.
+* Deutsche (mit freundlicher Genehmigung von Wilhelm Spiegl) und
+  türkische (bitigchi von fd-nls) Übersetzungen aktualisiert
++ -l entfernt, %LANG% verwendet; Meldungen werden aus Dateien in einem
+  NLS-Verzeichnis gelesen
+* von einem 386er PC ausgegangen (386-Anweisungen wurden vor dem Test
+  verwendet, niemand hat sich beschwert)
 
 
 Verbleibende bekannte Fehler:
