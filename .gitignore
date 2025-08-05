@@ -6,3 +6,5 @@
 *.map
 *.obj
 *.sys
+doc/doslfn.*
+NLS/DOSLFN.*
