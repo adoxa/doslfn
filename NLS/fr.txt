@@ -65,10 +65,10 @@ ACTIF
 INACTIF
 %48s %s\n
 le répertoire n'existe pas !
-\nImpossible de définir le répertoire de travail
-\nImpossible de redimensionner le tas
-\nOption rejetée
-\n- déchargez d'abord le résident de la mémoire.
+Impossible de définir le répertoire de travail\n\s\s\s\s\s\s\s\s\s\s\s\s\s
+Impossible de redimensionner le tas\n\s\s\s\s\s\s\s\s\s\s\s\s\s
+Option rejetée\s
+- déchargez d'abord le résident de la mémoire.
 \nCe programme est inutile dans une fenêtre DOS de cette version de Windows !
 Tas: taille=%u, utilisé=%u, libre=%u, max-dispo=%u Octets\n
 drapeau InDOS et RÉINITIALISATION du lecteur

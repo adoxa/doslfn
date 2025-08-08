@@ -62,12 +62,12 @@ CDROM 上文件的只读位设置
 非法的堆栈大小
 开
 关
-%35s %s\n
+%30s %s\n
 目录不存在！
 不能设置工作目录。
 不能调整堆栈大小。
 选项被拒绝。
-\n请先卸载 TSR 程序。
+请先卸载 TSR 程序。
 \n此程序在该 Windows 版本的 DOS 窗口中是无用的！
 堆栈：大小=%u，已用=%u，空闲=%u，最大可用=%u 字节\n
 使用 InDOS 标记和重置驱动器
@@ -78,7 +78,7 @@ CDROM 上文件的只读位设置
 不能自动加载 Unicode 表
 ?USEWINTIME
 时区为
-%35s UTC%+d\n
+%30s UTC%+d\n
 ?
 ?PROFILE
 Profile.\n

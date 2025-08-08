@@ -64,9 +64,9 @@ EIN
 AUS
 %40s %s\n
 Verzeichnis existiert nicht!
-\nKann Arbeitsverzeichnis nicht setzen
-\nKann Heap-Größe nicht verändern
-\nSchalter nicht akzeptiert
+Kann Arbeitsverzeichnis nicht setzen
+Kann Heap-Größe nicht verändern
+Schalter nicht akzeptiert
  - dazu vorher TSR entfernen.
 \nIn einem DOS-Fenster dieser Windows-Version ist DOSLFN sinnlos!
 Heap: gesamt=%u, verwendet=%u, frei=%u, größter Block=%u Bytes\n
