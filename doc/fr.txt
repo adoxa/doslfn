@@ -842,7 +842,7 @@ Version 0.41f (4/2022)
 * ajout d'une vérification de base de la version (si différente, on fait comme
   si elle n'était pas installée)
 
-Version 0.42 (7/2025)
+Version 0.42 (8/2025)
 - toujours vérifier si un périphérique est présent (par exemple "con.*"
   est toujours un périphérique)
 - suppression des références restantes aux tables Joliet

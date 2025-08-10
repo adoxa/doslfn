@@ -768,7 +768,7 @@ Sürüm 0.41f (4/2022)
 - daha fazla dizin genişletme düzeltmeleri
 * temel bir sürüm denetimi ekle (farklıysa kurulmamış gibi yap)
 
-Sürüm 0.42 (7/2025)
+Sürüm 0.42 (8/2025)
 - cihazlar için daima kontrol et (mesela "con.*" bir cihazdır)
 - Joliet tablolarına kalan referansları kaldır
 - belgelendirilmemiş SETALC komutunu değiştir (bazı klonlarda desteklenmez)

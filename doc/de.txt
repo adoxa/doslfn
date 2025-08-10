@@ -865,7 +865,7 @@ Version 0.41f (4/2022)
 * Einfache Versionsprüfung hinzugefügt (wenn andere Progs so tun
   als wäre es nicht installiert.
 
-Version 0.42 (7/2025)
+Version 0.42 (8/2025)
 - Immer auf ein Gerät prüfen (z. B. ist "con.*" immer noch ein Gerät).
 - Verbleibende Verweise auf Joliet-Tabellen entfernen
 - Undokumentierte SETALC-Anweisung ersetzen (wird von einigen Klonen

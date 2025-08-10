@@ -201,7 +201,9 @@ LANG Language environment variable. DOSLFN is multilingual; it automatically
   chooses a language based on the country code, or this variable. Messages are
   read from files in the NLS directory (using the first three characters of
   %LANG% as the extension), which can be in the same directory as the binary,
-  or a sibling directory.
+  or a sibling directory. An underscore or dash in the third position will be
+  skipped and if it doesn't exist it will try with only two characters (e.g.
+  LANG=pt_BR => DOSLFN.ptB => DOSLFN.pt).
 
 ** If profiling is enabled **
 
@@ -710,7 +712,7 @@ Version 0.41f (4/2022)
 - more extending directory fixes
 * add a basic version check (if different pretend it's not installed)
 
-Version 0.42 (7/2025)
+Version 0.42 (8/2025)
 - always check for a device (e.g. "con.*" is still a device)
 - remove remaining references to Joliet tables
 - replace undocumented SETALC instruction (unsupported on some clones)

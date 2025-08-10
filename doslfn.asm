@@ -7116,21 +7116,32 @@ proc SetLang
 	mov	ax,[es:di+4]	;only use the first three characters of LANG
 	mov	[wo language],ax
 	mov	al,[es:di+6]
-	mov	[language+2],al
+	cmp	al,'_'          ; but skip underscore
+	je	@@4th
+	cmp	al,'-'          ; or dash
+	jne	@@3rd
+@@4th:	mov	al,[es:di+7]
+@@3rd:	mov	[language+2],al
 @@e:	LD	es,ds
 	mov	di,ofs fname_buffer
 	mov	dx,di
 	call	CopyWorkDir
-	mov	si,ofs NLSpath+3
+@@2:	mov	si,ofs NLSpath+3
 	push	di
 	call	strcpy
 	pop	di
 	DOS	3D00h		;zum Lesen ”ffnen
 	jnc	@@ok
 	mov	si,ofs NLSpath
+	push	di
 	call	strcpy
+	pop	di
 	DOS	3D00h
-	jc	@@r
+	jnc	@@ok
+	cmp	[language+2],ah ;error code in AX should be < 256
+	je	@@r
+	mov	[language+2],ah ;try a two-character code
+	jmp	@@2
 @@ok:	xchg	bx,ax
 	mov	di,ofs Texte+2	;string 0 is always a newline
 @@read: call	getc
@@ -8117,27 +8128,30 @@ Downl$: dz	"https://www-user.tu-chemnitz.de/~heha/hsn/dos/doslfn/"
 djmh$:	dz	"http://adoxa.altervista.org/doslfn/"
 
 Text0	db	"DOSLFN 0.42: $"
-Text1	db	"haftmann#software & jmh 7/2025  $"
+Text1	db	"haftmann#software & jmh 8/2025  $"
 
 country_codes:
+	dw	421,'CZ'	; Czech Republic
 	dw	 43,'DE'	; Austria
-	dw	  2,'FR'	; Canadian-French
-	dw	 86,'ZH'	; China
-	dw	 45,'DK'	; Denmark
-	dw	358,'FI'	; Finland
-	dw	 33,'FR'	; France
 	dw	 49,'DE'	; Germany
+	dw	 45,'DK'	; Denmark
+	dw	 34,'ES'	; Spain
+	dw	358,'FI'	; Finland
+	dw	  2,'FR'	; Canadian-French
+	dw	 33,'FR'	; France
 	dw	 36,'HU'	; Hungary
 	dw	 39,'IT'	; Italy
 	dw	 81,'JA'	; Japan
+	dw	371,'LV'	; Latvia
 	dw	 31,'NL'	; Netherlands
+	dw	 47,'NO'	; Norway
 	dw	 48,'PL'	; Poland
 	dw	351,'PT'	; Portugal
 	dw	  7,'RU'	; Russia
 	dw	386,'SL'	; Slovenia
-	dw	 34,'ES'	; Spain
 	dw	 46,'SV'	; Sweden
 	dw	 90,'TR'	; Turkey
+	dw	 86,'ZH'	; China
 country_codes_size = ($ - country_codes) / 2
 
 nextc	db	0
