@@ -213,6 +213,9 @@ LANG ortam değişkeni. DOSLFN çok dillidir; otomatik olarak ülke koduna veya 
   değişkene dayalı bir lisan seçer. Mesajlar NLS dizinindeki dosyalardan
   okunur (%LANG% unsurunun ilk üç karakteri uzantı olarak kullanılarak),
   ki bu dizin ikili dosya ile aynı dizinde veya yakın bir dizinde bulunabilir.
+  Üçüncü konumdaki bir alt tire veya tire atlanacak ve eğer mevcut değilse
+  sadece iki karakter ile denenecektir (mesela LANG=pt_BR => DOSLFN.ptB =>
+  DOSLFN.pt).
 
 ** Eğer profil oluşturma etkinse **
 

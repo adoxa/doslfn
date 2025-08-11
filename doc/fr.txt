@@ -221,7 +221,10 @@ LANG variable d'environnement pour sélectionner la langue. DOSLFN est
   de pays ou sur cette variable. Les messages sont lus depuis des fichiers dans
   le répertoire NLS (en utilisant les trois premiers caractères de %LANG%
   en tant qu'extension), qui peut se trouver dans le même répertoire que le
-  binaire ou bien dans un répertoire proche.
+  binaire ou bien dans un répertoire proche. Un tiret bas ou un tiret à la
+  troisième position sera ignoré et s'il n'est pas prèsent un essai sera
+  effectué avec seulement deux caractères (par exemple LANG=pt_BR =>
+  DOSLFN.ptB => DOSLFN.pt).
 
 ** Si le profilage est activé **
 
