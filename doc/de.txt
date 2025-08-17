@@ -240,7 +240,9 @@ LANG - Sprachumgebungsvariable. DOSLFN ist mehrsprachig; es wählt auto-
   Meldungen werden aus Dateien im NLS-Verzeichnis gelesen (mit den ersten
   drei Zeichen von %LANG% als Erweiterung). Dieses kann sich im selben
   Verzeichnis wie die Binärdatei oder in einem verwandten Verzeichnis
-  befinden.
+  befinden. Ein Unterstrich oder Bindestrich an der dritten Stelle wird
+  übersprungen. Ist er nicht vorhanden, werden nur zwei Zeichen versucht
+  (z. B.: LANG=pt_BR => DOSLFN.ptB => DOSLFN.pt).
 
 ** Wenn Profilerstellung aktiviert ist **
 
