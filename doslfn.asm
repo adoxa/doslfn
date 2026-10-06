@@ -8128,8 +8128,8 @@ ejmh$:	dz	"jadoxa@yahoo.com.au"
 Downl$: dz	"https://www-user.tu-chemnitz.de/~heha/hsn/dos/doslfn/"
 djmh$:	dz	"http://adoxa.altervista.org/doslfn/"
 
-Text0	db	"DOSLFN 0.42: $"
-Text1	db	"haftmann#software & jmh 8/2025  $"
+Text0	db	"DOSLFN 0.42a: $"
+Text1	db	"haftmann#software & jmh 10/2026  $"
 
 country_codes:
 	dw	421,'CZ'	; Czech Republic
