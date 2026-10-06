@@ -1542,7 +1542,7 @@ endif
 ife USEFREESPC
 	mov	ax,7305h
 	jmp	CallOld 	;10/02: ohne Rekursion
-	nop			;padding byte for GetDPB_std
+	db	3 dup (90h)	;padding for GetDPB_std
 else
 @@ed:	mov	ah,73h
 fw:	jmp	CallOld 	;or CALL
@@ -6449,6 +6449,7 @@ proc Fat_RW_std
 ;    [RWRec]=Sektor,Anzahl,Speicheradresse
 ;VR: alle
 	mov	[by int2526],al
+	jmp	$+2		;flush 486 instruction queue
 	mov	cx,0FFFFh
 	lea	bx,[RWRec]
 	mov	al,[DPB_Drive]
