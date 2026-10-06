@@ -7387,8 +7387,8 @@ endif
 	 stc			;for pre-DOS7
 	 int	21h
 	 jnc	@@ext
-	 cmp	ax,7300h	;did it fail because there's no such call?
-	 jne	@@ext		;no, it didn't like the drive
+	 cmp	al,1		;did it fail because there's no such call?
+	 ja	@@ext		;no, it didn't like the drive
 	 mov	si,ofs Fat_RW_std ;copy the standard routines
 	 mov	di,ofs Fat_RW
 	 mov	cx,std_size
