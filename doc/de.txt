@@ -882,6 +882,10 @@ Version 0.42 (8/2025)
 * von einem 386er PC ausgegangen (386-Anweisungen wurden vor dem Test
   verwendet, niemand hat sich beschwert)
 
+Version 0.42a (10/2026)
+- Fix für altes DOS auf 486ern (gemeldet und behoben von Lauren, danke!)
+- Fix für die FAT32-Erkennung unter originalem DOS 7 (gemeldet von Artyom)
+
 
 Verbleibende bekannte Fehler:
 - Kein Einstellen/Aktualisieren des "letzten Zugriffs"-Datums.
